@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+    <div class="homo"></div>
+
+<body>
+    <script>
+        (function () {
+            var _NS = function () {
+
+            }
+            
+            _NS.prototype.select = function (selector, context) {
+                var context = context || document;
+                return context.querySelectorAll(selector);
+            }
+
+            _NS.prototype.isArrayLike = function (obj) {
+                if (obj instanceof Array) {
+                    return true;
+                }
+
+            }
+            
+            _NS.prototype.channel = function (arr) {
+                if(!Array.isArray(arr)) {
+                    return arr + 'is not an array.'
+                }
+                return [...new Set(arr)]
+            }
+            _NS.prototype.html = function (obj, value) {
+                var isArray = this.isArrayLike(obj),
+                    i = 0;
+                    
+                if (typeof value == 'string') {
+                    if (!isArray) {
+                        obj.innerHTML = value;
+                    } else {
+                        var length = obj.length;
+                        while (i < length) {
+                            obj[i].innerHTML = value;
+                            i += 1;
+                        }
+                    }
+                } else {
+                    if (!isArray) {
+                        return obj.innerHTML;
+                        
+                    } else {
+                        return obj[0].innerHTML;
+                    }
+                }
+            }
+
+            window.NS = new _NS();
+        })();
+    </script>
+</body>
+
+</html>
