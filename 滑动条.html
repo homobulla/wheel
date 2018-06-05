@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            background: yellowgreen;
+        }
+        .container {
+            width: 300px;
+            height:30px;
+            display: flex;
+            flex-flow: row nowrap;
+        }
+
+        .left,
+        .right {
+            height: 100%;
+        }
+
+        .left {
+            background: red;
+        }
+
+        .right {
+            
+            background: blue;
+        }
+
+        .drag {
+           
+            background: #eee;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="left">left</div>
+        <div class="drag">Drag</div>
+        <div class="right">right</div>
+    </div>
+
+
+    <script>
+        var dragDom = document.querySelector('.drag'),
+            left = document.querySelector('.left'),
+            right = document.querySelector('.right'),
+            container = document.querySelector('.container'),
+            mousedownX = 0,
+            lW = left.offsetWidth,
+            num1 = 4000,
+            num2 = 4000;
+
+        right.style.width = right.offsetWidth;
+        left.style.width = num1 / (num2 + num1)*100 + '%';
+        right.style.width = num2 / (num2 + num1)*100  + '%';
+        console.log(container.offsetWidth)
+        var mouseMoveHandler = function (e) {
+            var width = e.changedTouches[0].clientX - mousedownX;
+            var calcLW = lW + width;
+            
+            calcLW < 0 ? calcLW = 0 : 1;
+            calcLW > container.offsetWidth ? calcLW = container.offsetWidth : 0;
+            left.style.width = calcLW + 'px'
+            right.style.width = container.offsetWidth - calcLW + 'px'
+            console.log(left.style.width,right.style.width)
+            // 不需要判断滑动方向 只需要绑定width就行了
+            // moveEndX = e.changedTouches[0].pageX;
+            // var isMoveRight = moveEndX - startX > 0 ? console.log("右边") : console.log("左边");
+        }
+        window.onload = function () {
+            dragDom.addEventListener('touchstart', function (e) {
+                mousedownX = e.changedTouches[0].clientX;
+                lW = left.offsetWidth
+             
+                // startX = e.changedTouches[0].pageX;
+
+            })
+
+            dragDom.addEventListener('touchmove', mouseMoveHandler)
+            dragDom.addEventListener('touchend', function () {
+                dragDom.removeEventListener('mousemove', mouseMoveHandler)
+            })
+        }
+    </script>
+</body>
+
+</html>
