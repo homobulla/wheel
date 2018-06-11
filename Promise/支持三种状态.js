@@ -20,7 +20,7 @@ function MyPromise(fn) {
                 _this.status = FULFILLED;     // 成功之后立即 pending -> fulfiled
                 _this.value = value;
                 _this.onFulfilled(_this.value);
-            })
+            },0)
         }
     }
 
@@ -30,7 +30,7 @@ function MyPromise(fn) {
                 _this.status = REJECTED;     // 成功之后立即 pending -> fulfiled
                 _this.error = error;
                 _this.onRejected(_this.error);
-            })
+            },0)
         }
     }
 
