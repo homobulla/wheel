@@ -90,11 +90,11 @@
             width: 96px;
             height: 96px;
             opacity: 1;
-            
+
             filter: alpha(opacity=100);
         }
     </style>
-  
+
 </head>
 
 <body>
@@ -107,10 +107,12 @@
     <ul id="box"></ul>
 
     <script type="text/javascript">
-        
         let contain = document.querySelector('#box');
-        var arr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+        var arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
         var oFragment = document.createDocumentFragment();
+        var btn = document.getElementsByTagName('input')[0];
+        var lis = document.getElementsByTagName('li');
+        // 插入元素
         function insertDom() {
             let lis = null;
             arr.forEach(i => {
@@ -119,26 +121,71 @@
                 img.src = `./img/girl0/${i}.png`;
                 str.appendChild(img);
                 oFragment.appendChild(str);
-            });    
+            });
         }
         insertDom();
         contain.appendChild(oFragment);
+
         function imageInitialization() {
 
         }
+        // 乱序 排序
         function sert() {
             arr.sort(function (a, b) {
                 return Math.random() > 0.5 ? -1 : 1
             });
         }
-        var a = document.getElementsByTagName('input')[0];
-
-        a.onclick = function() {
+        //开始游戏
+        btn.onclick = function () {
             sert();
             insertDom();
-            contain.innerHTML(oFragment);
+            contain.innerHTML = '';
+            contain.appendChild(oFragment);
+            [...lis].forEach((i) => {
+                i.onmousemove = drag(i);
+            })
+        }
+        // 拖拽函数
+        function drag(obj, handle) {
+            var handle = handle || obj;
+            handle.style.cursor = "move";
+            handle.onmousedown = function (event) {
+                var event = event || window.event;
+                var disX = event.clientX - this.offsetLeft;
+                var disY = event.clientY - this.offsetTop;
+                var oNear = null;
+                //obj.style.zIndex = zIndex++;
+                document.onmousemove = function (event) {
+                    var event = event || window.event;
+                    var iL = event.clientX - disX;
+                    var iT = event.clientY - disY;
+                    var maxL = obj.parentNode.clientWidth - obj.offsetWidth;
+                    var maxT = obj.parentNode.clientHeight - obj.offsetHeight;
 
-        };
+                    iL < 0 && (iL = 0);
+                    iT < 0 && (iT = 0);
+                    iL > maxL && (iL = maxL);
+                    iT > maxT && (iT = maxT);
+                    obj.style.left = iL + "px";
+                    obj.style.top = iT + "px";
+
+                    for (i = 0; i < lis.length; i++) lis[i].className = "";
+
+                    //oNear = findNearest(obj);
+
+                    oNear && (oNear.className = "hig");
+
+                    return false
+                };
+                
+            }
+        }
+
+        //获取最终样式
+        function getStyle(obj, attr) {
+            return parseFloat(obj.currentStyle ? obj.currentStyle[attr] : getComputedStyle(obj, null)[attr])
+        }
+        
     </script>
 </body>
 
