@@ -70,6 +70,7 @@ function insertionSort(arr) {
         preIndex = i - 1;
         current = arr[i];
         while(preIndex >= 0 && arr[preIndex] > current) {
+            console.log('arr[preIndex] is '+arr[preIndex],' current is '+current)
             arr[preIndex+1] = arr[preIndex];
             preIndex--;
         }
@@ -78,4 +79,27 @@ function insertionSort(arr) {
     return arr;
 }
 
-console.log(insertionSort([1,34,3,0,-44,1212,43,4,33333,44444,232,23,-34,-34,-32423424,242423]),'插入')
+//console.log(insertionSort([1,34,3,0,-44,1212,43,4,33333,44444,232,23,-34,-34,-32423424,242423]),'插入')
+
+// 希尔排序
+function shellSort(arr) {
+    console.time('哈希排序耗时');
+    var len = arr.length,
+        temp,
+        gap = 1;
+    while(gap < len/3) {          //动态定义间隔序列
+        gap =gap*3+1;
+    }
+    for (gap; gap > 0; gap = Math.floor(gap/3)) {
+        for (var i = gap; i < len; i++) {
+            temp = arr[i];
+            for (var j = i-gap; j >= 0 && arr[j] > temp; j-=gap) {
+                arr[j+gap] = arr[j];
+            }
+            arr[j+gap] = temp;
+        }
+    }
+    console.timeEnd('哈希排序耗时');
+    return arr;
+}
+console.log(shellSort([1,34,3,0,-44,1212,43,4,33333,44444,232,23,-34,-34,-32423424,242423]),'插入')
