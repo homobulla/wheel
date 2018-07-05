@@ -1,0 +1,61 @@
+$backgroundColor: #f5f6f7; //全局背景色
+$baseColor: #f75a5a; // 全局字体/btn颜色
+
+@mixin mybtn($width) {
+  margin: 80px auto;
+  width: $width;
+  height: 100px;
+  text-align: center;
+  line-height: 100px;
+  border-radius: 50px;
+  background-color: $baseColor;
+  box-shadow: 0 4px 29px rgba(204, 204, 204, 0.5); /*no*/
+  border: none;
+  font-size: 36px;
+  color: #fff;
+}
+
+@mixin myflex {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin backImg($width, $height) {
+  width: $width;
+  height: $height;
+  background-size: 100%;
+}
+
+@mixin mybody {
+  width: 100%;
+  min-height: 100%;
+  background: $backgroundColor;
+}
+
+@mixin boxSizing($padding) {
+  box-sizing: border-box;
+  padding: 0 $padding;
+}
+.left {
+  text-align: left !important;
+}
+.right {
+  text-align: right !important;
+}
+.rights {
+  float: right !important;
+}
+
+// pop 组件格式修改
+.yidun_tips__text {
+  color: $baseColor;
+}
+
+.active .pop-cont {
+  width: 585px !important;
+}
+.active .pop-my {
+  margin-top: 0 !important;
+}
