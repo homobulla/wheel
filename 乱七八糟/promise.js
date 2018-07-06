@@ -1,6 +1,9 @@
 class Promise {
 	constructor(fn) {
 		this.status = 'Pending';
+		this.success = null;
+		this.error = null;
+
 		setTimeout(() => {
 			fn(
 				(data) => {
@@ -33,9 +36,11 @@ class Promise {
 	}
 }
 
-let p1 = new Promise((resolve, reject) => {
-	// reject('hello error');
-	setTimeout(() => {
-		resolve('hello promise');
-	}, 1000);
-});
+function flatten(arr) {
+	return [].concat(...arr.map((x) => (Array.isArray(x) ? flatten(x) : x)));
+}
+
+var a = Array(100)
+	.fill()
+	.map((_, i) => i + 1);
+console.log(a);
