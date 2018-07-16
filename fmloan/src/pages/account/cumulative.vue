@@ -1,26 +1,24 @@
 <template>
     <div class="cumulative">
-         <main>
-                    <div class="myInvite-list">
-                        <p class="left">注册日期</p>
-                        <p>好友手机号</p>
-                        <p class="right">借款金额</p>
-                    </div>
-                    <ul class="myInvite-reg" >
-                        <li class="left">2018-05-05</li>
-                        <li>13584654545</li>
-                        <li class="right">0</li>
-                         <li class="left">2018-05-05</li>
-                        <li>13584654545</li>
-                        <li class="right">0</li>
-                         <li class="left">2018-05-05</li>
-                        <li>13584654545</li>
-                        <li class="right">0</li>
-                    </ul>
-                 
-                
-                
-            </main>
+        <main v-if="hasData == 1">
+            <div class="myInvite-list">
+                <p class="left">注册日期</p>
+                <p>好友手机号</p>
+                <p class="right">借款金额</p>
+            </div>
+            <ul class="myInvite-reg" v-for="i in list" :key="i.mobile">
+                <li class="left">{{i.inviteTime}}</li>
+                <li>{{i.mobile}}</li>
+                <li class="right">{{i.loanAmount}}</li>
+            </ul>
+        </main>
+        <div class="no-data" v-else-if="hasData == 2">
+            <div>
+                <img src="../../assets/no-data.png" alt="">
+                <p>当前还没有任何数据, 快去邀请吧~</p>
+                <div class="invit-btn" @click="$router.push('/active')">立即邀请好友</div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -29,11 +27,42 @@ export default {
     name: 'cumulative',
     data() {
         return {
-        
+            list: [],
+            hasData: '0'
         }
     },
+    created(){
+        this.getInviteLIst();
+    },
     methods: {
-
+        getInviteLIst(){
+            this.$axios({
+                data: {
+                    transcode: '1115',
+                    body: {
+                        'uid': localStorage.getItem('uid'),
+                        'token': localStorage.getItem('token'),
+                        "pageNum": 1,
+                        "pageSize": 100
+                    }    
+                },
+            }).then(res => {
+                let data = res.data.data
+                if (data.header.errCode == 0) {
+                    this.hasData = 1;
+                    this.list = data.body.inviteUserList
+                    this.list.forEach(i=>{
+                        i.inviteTime = i.inviteTime.substring(0,10);
+                    })
+                } else if (data.header.errCode == 'C0112') {
+                    this.hasData = 2;
+                } else {
+                    this.$toast(data.header.errMsg)
+                }
+            }).catch(err=>{
+                this.$toast('请求失败')
+            })
+        }
     }
 }
 </script>

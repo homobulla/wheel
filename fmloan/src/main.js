@@ -7,18 +7,16 @@ import flexible from 'lib-flexible'
 
 import axios from './commenjs/axios'
 Vue.prototype.$axios = axios
-
+import myaxios from 'axios'
+Vue.prototype.$myaxios = myaxios
+let b = Vue.prototype.$myaxios;
+b.defaults.withCredentials = true
 import api from './commenjs/api'
 global.api = api
 // 公共方法
 import utils from './commenjs/utils'
 Vue.use(utils)
 Vue.config.productionTip = false
-
-// toast 组件
-// import 'vue2-toast/lib/toast.css'
-// import Toast from 'vue2-toast'
-// Vue.use(Toast)
 
 import toast from './components/toast/index'
 Vue.use(toast)
@@ -37,13 +35,15 @@ Vue.component('homo-pop', pop)
 //import qrcode from '../static/js/qrcode.js'
 
 router.beforeEach((to, from, next) => {
-    (localStorage.getItem('token') || to.path === '/login' || to.path === '/register' || to.path === '/reg2') ? next(): next('/login')
+  localStorage.getItem('token') || to.path === '/login' || to.path === '/' || to.path === '/reg2' || to.path === '/active' 
+    ? next()
+    : window.location.href = api.LOGIN
 })
 new Vue({
-    el: '#app',
-    router,
-    components: {
-        App
-    },
-    template: '<App/>'
+  el: '#app',
+  router,
+  components: {
+    App
+  },
+  template: '<App/>'
 })

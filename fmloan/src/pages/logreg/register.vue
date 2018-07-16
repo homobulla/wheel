@@ -1,7 +1,7 @@
 <template>
     <div class="register">
         <header>
-            欢迎加入蜂粉大家庭
+            广告预留位置
         </header>
         <section>
             <div class="login">

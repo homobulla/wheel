@@ -45,6 +45,8 @@ export default {
                     this.mobile = this.hideMobile(data.body.mobile);
                     this.myQrCode = data.body.myQrCode;
                 }
+            }).catch(err=>{
+                this.$toast('请求失败')
             })
         },
         

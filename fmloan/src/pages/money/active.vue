@@ -37,6 +37,7 @@
                 </div>
            </div>
         </homo-pop>
+        <iframe src="https://tysrlogin.ftoul.com/p2p-front/secure/fedservlet" style="display:none"></iframe>
         
     </div>
 </template>
@@ -48,18 +49,83 @@ export default {
         return {
             isRules: '',
             isShare: '',
-            myQrCode: ''
+            myQrCode: '',
+            local: '',
+            phoneModel: '',
+            ipAddress: ''
         }
     },
     created() {
-        this.getShare();
+        this.getQueryString('isLogin') == 1 || localStorage.getItem('token') ? this.login() : window.location.href = api.LOGIN;
+        this.getIp();
+        
+    },
+    mounted(){
+        navigator.geolocation.getCurrentPosition(this.getSuccess, this.getError, {
+            enableHighAccuracy: true,
+            maximumAge: 0
+        });
+        var md = new MobileDetect(window.navigator.userAgent);
+        this.phoneModel = md.phone()
     },
     methods: {
+        getSuccess (position) {
+            console.log(position)
+            this.local = position.coords.latitude + ',' + position.coords.longitude
+        },
+        getError (error) {
+            console.log(error)
+        },
         hidePop () {
             this.isRules = 0;
             this.isShare = 0;
         },
+        getIp() {
+            this.$axios({
+            url: api.LOCATION,
+            method: 'get',
+            data: {}
 
+            }).then(ret =>{
+                let made = ret.data.split('=')[1];
+                let madea = `${made.split(';')[0]}`;
+                var result = JSON.parse(madea);
+                this.ipAddress = result.cip;
+            })
+        },
+        login(){
+
+            this.$axios({
+                data: {
+                    transcode: '1001',
+                    body: {
+                        'userType': '0',
+                        'phone': '',
+                        'pwd': '',
+                        'ipAddress': this.ipAddress,
+                        'p2pUid': '',
+                        'local': this.local,
+                        'phoneModel': this.phoneModel
+                    },
+                },
+             
+            }).then(res => {
+                var data = res.data.data
+                console.log(data)
+                if (data.header.errCode == 0) {
+                    
+                    localStorage.setItem('icon', data.body.icon)
+                    localStorage.setItem('uid', data.body.uid)
+                    localStorage.setItem('token', data.body.token)
+                    localStorage.setItem('phone', data.body.phone)
+                    localStorage.setItem('p2pUid', data.body.p2pUid)
+                    this.getShare();
+                } else {
+                }
+            }).catch(error =>{
+            
+            })
+        },
         getShare() {
             this.$axios({
                 data: {

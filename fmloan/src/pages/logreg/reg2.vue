@@ -110,7 +110,7 @@ export default {
                         'pwd': this.login.password,
                         'changeFlag': '0',
                         'code': this.login.code,
-                        'channelFlag': ''
+                        'channelFlag': 'FTJK'
                     }
                 },
             }).then(res => {
@@ -126,6 +126,8 @@ export default {
                 } else {
                     this.$toast(data.header.errMsg)
                 }
+            }).catch(err=>{
+                this.$toast('请求失败')
             })
         },
         
@@ -167,7 +169,9 @@ export default {
                     } else {
                         this.$toast('验证码发送成功！')
                     }
-                })
+                }).catch(err=>{
+                this.$toast('请求失败')
+            })
             }
         }
     }

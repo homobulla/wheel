@@ -43,4 +43,3 @@ function flatten(arr) {
 var a = Array(100)
 	.fill()
 	.map((_, i) => i + 1);
-console.log(a);

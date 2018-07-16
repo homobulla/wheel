@@ -1,31 +1,27 @@
 import Eajax from 'axios'
 import qs from 'qs'
-import Vue from 'vue'
 
 const Axios = function(defaultConfig) {
   return this.packageAxios(defaultConfig)
 }
-
 Axios.prototype = {
   packageAxios: function(options = {}) {
     this.getBaseParams(options)
     return Eajax({
-      method: this.method,
       url: this.url,
+      method: this.method,
       data: this.data,
+      withCredentials: true,
       timeout: 10000
     })
       .then(res => {
         // 蜂投理财接口未登录跳转登录页
         if (res.data.errCode == -1 && this.urlType === 1) {
           localStorage.removeItem('token')
-          window.history.go(0)
         }
         return res
       })
-      .catch(error => {
-        console.log(error)
-      })
+      .catch(error => {})
   },
   getBaseParams: function(options) {
     options = options || {}
@@ -40,6 +36,7 @@ Axios.prototype = {
   // 切换请求头格式
   cutRequestData(options) {
     switch (this.urlType) {
+      
       case 0:
         this.data = qs.stringify({
           requestMsg: JSON.stringify({
@@ -52,7 +49,11 @@ Axios.prototype = {
         break
       case 1:
         this.data = options.data
-        this.url = process.env.P2P_BASE_URL + this.urlParams
+        this.url = api.LICAI + this.url
+        break
+      case 2:
+        this.data = options.data
+        this.url =  this.url
         break
     }
   },

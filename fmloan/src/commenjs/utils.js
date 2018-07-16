@@ -77,6 +77,13 @@ export default {
         Vue.prototype.hideMobile = function(num) {
             typeof num !== 'string' && (num = String(num));
             return num = num.substr(0, 3) + "****" + num.substr(7)
+        },
+        Vue.prototype.getQueryString =function (name) { 
+            var url = window.location.href ;
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); 
+            var r = url.substring(url.lastIndexOf("?") + 1).match(reg); 
+            if (r != null) return unescape(r[2]); 
+            return null;
         }
         
     }

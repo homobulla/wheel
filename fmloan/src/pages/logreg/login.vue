@@ -1,5 +1,6 @@
 <template>
     <div id="login">
+          <!-- <iframe id="login" scrolling="auto" frameborder="0" src="http://tysrlogin.ftoul.com/p2p-front/secure/fedservlet" style="width:100%;height:60%;"></iframe> -->
         <header></header>
         <section>
             <div>
@@ -13,7 +14,7 @@
                     <input type="password" placeholder="请输入登录密码"  v-model="login.password">
                     <p   @click="changeStatu">
                         <img class="login-right" src="../../assets/unsee.png" alt="" v-show="logoStatus">
-                        <img class="login-right" src="../../assets/see.png" alt="" v-show="!logoStatus">   
+                        <img class="login-right" src="../../assets/see.png" alt="" v-show="!logoStatus">
                     </p>	    
                 </div>
                 <div class="login-error" v-if="loginError">
@@ -23,10 +24,10 @@
 
                 <div class="login-btn" :class="{'Style':isActive}" @click="logins">登录</div>
                 <p class="register">还未注册账户？<a style="color: #2197f3;" @click="$router.push('/')">立即注册</a></p>
-                <!-- <iframe id="login" scrolling="auto" frameborder="0" src="http://tylogin.ftoul.com/p2p-front/secure/fedservlet" style="width:100%;height:100%;"></iframe> -->
+              
             </div>
         </section>
-        <homo-foot></homo-foot>
+        <!-- <homo-foot></homo-foot> -->
     </div>
 </template>
 
@@ -45,12 +46,14 @@ export default {
             loginError: '',
             local: '',
             ipAddress: '',
-            phoneModel: ''
+            phoneModel: '',
+            path: ''
 
         };
     },
     created() {
         this.getIp();
+        // this.path = this.$route.query.path ? this.$route.query.path : '/';
     },
     mounted () { 
         var md = new MobileDetect(window.navigator.userAgent);
@@ -73,7 +76,7 @@ export default {
     methods: {
         getIp() {
             this.$axios({
-            url: 'https://pv.sohu.com/cityjson?ie=utf-8',
+            url: api.LOCATION,
             method: 'get',
             data: {}
 
@@ -104,10 +107,10 @@ export default {
                     transcode: '1001',
                     body: {
                         'userType': '0',
-                        'phone': '15575144373',
-                        'pwd': '111111',
+                        'phone': '',
+                        'pwd': '',
                         'ipAddress': this.ipAddress,
-                        //'p2pUid': '493575',
+                        'p2pUid': '',
                         // 'phone': this.login.phone,
                         // 'pwd': this.login.password,
                         'local': this.local,
@@ -117,6 +120,7 @@ export default {
              
             }).then(res => {
                 var data = res.data.data
+                console.log(res)
                 if (data.header.errCode == 0) {
                     this.loginError = 0;
                     localStorage.setItem('icon', data.body.icon)
@@ -124,10 +128,12 @@ export default {
                     localStorage.setItem('token', data.body.token)
                     localStorage.setItem('phone', data.body.phone)
                     localStorage.setItem('p2pUid', data.body.p2pUid)
-                    this.$router.push('/')
+                    this.$router.push(this.path)
                 } else {
                     this.loginError = 1;
                 }
+            }).catch(error =>{
+               this.$toast('请求失败')
             })
         }
     }
