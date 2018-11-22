@@ -1,0 +1,112 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div id='app'>
+        <h3>姓名</h3>
+        <p>{{name}}</p>
+        <h3>年龄</h3>
+        <p>{{age}}</p>
+    </div>
+</body>
+<script>
+    // example 
+    // new Vue({el:'#app', data:{name:'检索中...', age:30}})
+    class Vue {
+        constructor(opt) {
+            // 拿到绑定的根元素
+            let root = document.querySelector(opt.el)
+            // 存储配置
+            this.opt = opt
+            // 1.劫持 data 里每个属性的 get、set 并绑定到 Observer
+            this.observe(opt.data)
+            // 2.依赖搜集
+            this.compile(root)
+        }
+
+        // 为 data 的每个属性创建 observer 并劫持属性的get, set 操作
+        observe(data) {
+            // 遍历 data 的属性
+            Object.keys(data).forEach(key => {
+                // 创建一个 observer
+                let obv = new Observer()
+                // 创建一个隐藏的 _<key> 属性 
+                // 问题： 为什么要创建一个隐藏的属性呢
+                data["_" + key] = data[key]
+                // 属性访问劫持
+                Object.defineProperty(data, key, {
+                    get() {
+                        // 如果 Observer.target 存在，就把它加到 subNode 里面
+                        Observer.target && obv.addSubNode(Observer.target)
+                        return data['_' + key]
+                    },
+                    set(newVal) {
+                        // 属性修改通知 update
+                        obv.update(newVal)
+                        // 更新隐藏属性的值
+                        data['_' + key] = newVal
+                    }
+                })
+            })
+        }
+        // 编译模板
+        // 根据正则匹配所有 {{var}} 变量绑定 然后替换为 data 里对应的属性值
+        compile(node) {
+            // 递归遍历根节点
+            [].forEach.call(node.childNodes, child => {
+                // !child.firstElementChild 判断是不是无子节点元素 形如 <div>{{var}}</div>
+                // 是则通过正则匹配捕捉是否存在变量绑定 {{var}}
+                if (!child.firstElementChild && /\{\{(.*)\}\}/.test(child.innerHTML)) {
+                    // 拿到捕捉的结果
+                    let key = RegExp.$1.trim()
+                    // data 里的值替换 比如 <div>{{var}}</div> ==> <div>hello</div>
+                    child.innerHTML = child.innerHTML.replace(
+                        new RegExp('\\{\\{\\s*' + key + '\\s*\\}\\}', 'gm'),
+                        this.opt.data[key]
+                    )
+                    // 将 Observer.target 设置为当前的 child 节点
+                    Observer.target = child
+                    // 通过属性的访问触发 get 劫持操作
+                    // Observer.target && obv.addSubNode(Observer.target) 然后这个节点的依赖就被收集了
+                    // 问题： 这儿有点意思，可以思考下,构思巧妙
+                    this.opt.data[key]
+                    // 然后置空收集下一个节点的依赖
+                    Observer.target = null
+                }
+                // 如果是有子节点的就递归调用操作便是
+                else if (child.firstElementChild)
+                    this.compile(child)
+            })
+        }
+    }
+
+    class Observer {
+        constructor() {
+            this.subNode = []
+        }
+        addSubNode(node) {
+            this.subNode.push(node)
+        }
+        // 更新每一个子节点的 DOM 值
+        update(newVal) {
+            this.subNode.forEach(node => {
+                node.innerHTML = newVal
+            })
+        }
+    }
+</script>
+
+</html>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let opt = { el: '#app', data: { name: '检索中...', age: 30 } }
+        let vm = new Vue(opt)
+        setTimeout(() => {
+            opt.data.name = '王永峰'
+        }, 2000);
+    }, false)
+</script>

@@ -1,0 +1,77 @@
+<html>
+
+<head>
+    <title>按图完成布局和拖动效果</title>
+    <style>
+        .container {
+            width: 100%;
+            height: 500px;
+            display: flex;
+            flex-flow: row nowrap;
+        }
+
+        .left,
+        .right {
+            height: 100%;
+        }
+
+        .left {
+            width: 250px;
+            background: red;
+        }
+
+        .right {
+            flex: 1;
+            background: blue;
+        }
+
+        .drag {
+            flex: 0.01;
+            background: #eee;
+        }
+
+        .right {
+            border-left: 0 none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="left">left</div>
+        <div class="drag">Drag</div>
+        <div class="right">right</div>
+    </div>
+</body>
+
+<script>
+    var e = document.querySelector('.drag')
+    var left = document.querySelector('.left')
+    var right = document.querySelector('.right')
+    var mousedownX = 0
+    var lW = left.offsetWidth
+    var rW = right.offsetWidth
+    right.style.width = right.offsetWidth
+    var mouseMoveHandler = mouseMoveHandler = function (e) {
+        var width = e.clientX - mousedownX
+        var calcLW = parseInt(lW) + width
+        var calcRW = parseInt(rW) - width
+        if (calcLW > 100 && calcLW < 300) {
+            left.style.width = calcLW + 'px'
+            right.style.width = calcRW + 'px'
+        }
+    }
+    window.onload = function () {
+        e.addEventListener('mousedown', function (e) {
+            mousedownX = e.clientX
+            lW = left.offsetWidth
+            rW = right.offsetWidth
+            window.addEventListener('mousemove', mouseMoveHandler)
+        })
+        window.addEventListener('mouseup', function () {
+            window.removeEventListener('mousemove', mouseMoveHandler)
+        })
+    }
+</script>
+
+</html>
