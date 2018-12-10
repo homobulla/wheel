@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>数据绑定</title>
+    </head>
+    <body>
+        <div id="app">
+            <main>
+                <p>请输入:</p>
+                <input type="text" id="input" />
+                <p id="p"></p>
+            </main>
+        </div>
+    </body>
+    <script>
+        // 订阅发布中心
+        let uid = 0
+        // 用于储存订阅者并发布消息
+        class Dep {
+            constructor() {
+                // 标记，用于区分新watcher和只改变属性值产生的watcher
+                this.id = uid++
+                // 所有订阅者
+                this.subs = []
+            }
+            // 触发addDep方法，参数为Dep实例本身
+            depend() {
+                Dep.target.addDep(this)
+            }
+            //添加订阅者
+            addSub(sub) {
+                this.subs.push(sub)
+            }
+            // 通知所有订阅者，更细
+            notity() {
+                this.subs.forEach(sub => {
+                    sub.update()
+                })
+            }
+        }
+        // 静态属性，指向当前的watcher
+        Dep.target = null
+
+        // 监听者 Observer
+        class Observer {
+            constructor(value) {
+                this.value = value
+                this.walk(value)
+            }
+            // 监听每个属性
+            walk(value) {
+                Object.keys(value).forEach(key => {
+                    this.convert(key, value[key])
+                })
+            }
+            // 具体监听方法
+            convert(key, val) {
+                defineReactive(this.value, key, val)
+            }
+        }
+        function defineReactive(obj, key, val) {
+            const dep = new Dep()
+            let chlidOb = observer(val)
+            Object.defineProperty(obj, key, {
+                enumerable: true,
+                configurable: true,
+                get() {
+                    // 如果Dep类存在target属性，将其添加到dep实例的subs数组中
+                    // target指向一个Watcher实例，每个Watcher都是一个订阅者
+                    // Watcher实例在实例化过程中，会读取data中的某个属性，从而触发当前get方法
+                    if (Dep.target) {
+                        dep.depend()
+                    }
+                    return val
+                },
+                set(newVal) {
+                    if (val === newVal) return
+                    val = newVal
+                    //  对新值进行监听
+                    chlidOb = observer(newVal)
+                    // 通知所有订阅者，数值被改变了
+                    dep.notity()
+                }
+            })
+        }
+
+        function observer(value) {
+            // 当值不存在，或者不是复杂数据类型时，不再需要继续深入监听
+            if (!value || typeof value !== 'object') {
+                return
+            }
+            return new Observer(value)
+        }
+
+        // 订阅者实现
+        class Watch {
+            constructor(vm, expOrFn, cb) {
+                this.depIds = {} // hash储存订阅者的id,避免重复的订阅者
+            }
+        }
+    </script>
+</html>

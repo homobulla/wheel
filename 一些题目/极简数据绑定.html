@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>数据绑定</title>
+    </head>
+    <body>
+        <div id="app">
+            <main>
+                <p>请输入:</p>
+                <input type="text" id="input" />
+                <p id="p"></p>
+            </main>
+        </div>
+    </body>
+    <script>
+        const obj = {}
+        Object.defineProperty(obj, 'text', {
+            get: function() {
+                console.log('get val')
+            },
+            set: function(newVal) {
+                console.log('set Val:' + newVal)
+                document.getElementById('input').value = newVal
+                document.getElementById('p').innerHTML = newVal
+            }
+        })
+        const input = document.getElementById('input')
+        input.addEventListener('keyup', function(e) {
+            obj.text = e.target.value
+        })
+    </script>
+</html>
