@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>信用分解读</title>
+        <!-- <meta
+            name="viewport"
+            content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=no"
+        /> -->
+        <style type="text/css">
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            #homo {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                width: 100%;
+                padding-top: 0.6rem;
+                height: 5.946667rem;
+                background: url(./bg.png);
+                background-repeat: no-repeat;
+                background-size: 100% 100%;
+            }
+
+            #homo p {
+                margin-bottom: 0.8733333rem;
+                font-size: 0.48rem;
+                color: #fff;
+            }
+            .tip {
+                text-align: center;
+                margin: 0.533333rem 0 1.2rem 0;
+            }
+            .tip p {
+                color: #333333;
+                font-size: 0.4rem;
+            }
+            .tip .score {
+                color: #4f4ed5;
+            }
+            .btn div {
+                width: 4.8rem;
+                height: 1.066667rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 0.4rem;
+                margin: 0 auto;
+                border-radius: 8px;
+            }
+            .btn .btn-one {
+                background: #4f4ed5;
+                color: #fff;
+                margin-bottom: 0.4rem;
+            }
+            .btn-two {
+                color: #4f4ed5;
+                border: 1px solid #4f4ed5;
+            }
+        </style>
+        <script>
+            document.getElementsByTagName('html')[0].style.fontSize =
+                document.documentElement.clientWidth / 12 + 'px'
+            function down() {
+                location.href =
+                    'https://a.app.qq.com/o/simple.jsp?pkgname=com.lushanyun.yinuo'
+            }
+        </script>
+        <script type="text/javascript">
+            window.onload = function() {
+                function getQueryString(name) {
+                    var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
+                    var r = window.location.search.substr(1).match(reg)
+                    if (r != null) {
+                        return decodeURI(r[2])
+                    }
+                    return null
+                }
+                var score = getQueryString('score')
+                    ? getQueryString('score')
+                    : 666
+
+                var name = getQueryString('name')
+                    ? getQueryString('name')
+                    : '壹诺'
+                var dom = document.getElementsByClassName('score')[0]
+                dom.innerHTML = score
+                var canvas = document.getElementById('canvas'),
+                    ctx = canvas.getContext('2d'),
+                    cWidth = canvas.width,
+                    cHeight = canvas.height,
+                    score = score, // 分数
+                    stage = ['', '', '', '', '', ''],
+                    radius = 190,
+                    deg0 = Math.PI / 9,
+                    deg1 = (Math.PI * 10) / 50
+
+                if (score < 300 || score > 900) {
+                    alert('信用分数区间：300~900')
+                } else {
+                    var dot = new Dot(),
+                        dotSpeed = 0.03,
+                        textSpeed = Math.round((dotSpeed * 100) / deg1),
+                        angle = 0,
+                        credit = 300
+
+                    ;(function drawFrame() {
+                        ctx.save()
+                        ctx.clearRect(0, 0, cWidth, cHeight)
+                        ctx.translate(cWidth / 2, cHeight / 2)
+                        ctx.rotate(8 * deg0)
+
+                        dot.x = radius * Math.cos(angle)
+                        dot.y = radius * Math.sin(angle)
+
+                        var aim = ((score - 300) * deg1) / 100
+                        if (angle < aim) {
+                            angle += dotSpeed
+                        }
+                        dot.draw(ctx)
+
+                        if (credit < score - textSpeed) {
+                            credit += textSpeed
+                        } else if (
+                            credit >= score - textSpeed &&
+                            credit < score
+                        ) {
+                            credit += 1
+                        }
+
+                        // 最外环
+                        ctx.save()
+                        ctx.beginPath()
+                        ctx.lineWidth = 10
+                        ctx.strokeStyle = '#fff'
+                        ctx.arc(0, 0, radius, 0, angle, false)
+                        ctx.stroke()
+                        ctx.restore()
+
+                        window.requestAnimationFrame(drawFrame)
+
+                        // 中心虚化圆
+                        ctx.save()
+                        ctx.beginPath()
+                        ctx.lineWidth = 1
+                        ctx.strokeStyle = '#7f7ade'
+                        ctx.arc(0, 0, 100, 0, 11 * deg0, false)
+                        ctx.globalAlpha = 0.3
+                        ctx.fillStyle = '#7f7ade'
+                        ctx.fill()
+                        ctx.stroke()
+                        ctx.restore()
+
+                        text(credit) // 绘制最终分数
+
+                        ctx.save() // 大刻度线
+                        for (var i = 0; i < 7; i++) {
+                            ctx.beginPath()
+                            ctx.lineWidth = 4
+                            ctx.strokeStyle = '#fff'
+                            ctx.moveTo(170, 0)
+                            ctx.lineTo(155, 0)
+                            ctx.stroke()
+                            ctx.rotate(deg1)
+                        }
+                        ctx.restore()
+
+                        ctx.save() // 细分刻度线
+                        for (i = 0; i < 30; i++) {
+                            if (i % 5 !== 0) {
+                                ctx.beginPath()
+                                ctx.lineWidth = 4
+                                ctx.strokeStyle = 'rgba(255, 255, 255, .3)'
+                                ctx.moveTo(170, 0)
+                                ctx.lineTo(157, 0)
+                                ctx.stroke()
+                            }
+                            ctx.rotate(deg1 / 5)
+                        }
+                        ctx.restore()
+
+                        ctx.save() //表盘上的信用分数
+                        ctx.rotate(Math.PI / 2)
+                        for (i = 0; i < 7; i++) {
+                            ctx.fillStyle = '#fff'
+                            ctx.font = '20px Microsoft yahei'
+                            ctx.textAlign = 'center'
+                            ctx.fillText(300 + 100 * i, 0, -115)
+                            ctx.rotate(deg1)
+                        }
+                        ctx.restore()
+
+                        ctx.save() //分数段
+                        ctx.rotate(Math.PI / 2 + deg0)
+                        for (i = 0; i < 5; i++) {
+                            ctx.fillStyle = '#fff'
+
+                            ctx.font = '10px Microsoft yahei'
+                            ctx.textAlign = 'center'
+                            ctx.fillText(stage[i], 5, -115)
+                            ctx.rotate(deg1)
+                        }
+                        ctx.restore()
+
+                        ctx.save() //信用阶段及评估时间文字
+                        ctx.rotate(10 * deg0)
+                        ctx.fillStyle = '#fff'
+                        ctx.font = '35px Microsoft yahei'
+                        ctx.textAlign = 'center'
+                        // if (score < 500) {
+                        //     ctx.fillText('信用较差', 0, 40)
+                        // } else if (score < 600 && score >= 500) {
+                        //     ctx.fillText('信用中等', 0, 40)
+                        // } else if (score < 700 && score >= 600) {
+                        //     ctx.fillText('信用良好', 0, 40)
+                        // } else if (score < 800 && score >= 700) {
+                        //     ctx.fillText('信用优秀', 0, 40)
+                        // } else if (score <= 900 && score >= 800) {
+                        //     ctx.fillText('信用极好', 0, 40)
+                        // }
+
+                        // ctx.fillStyle = 'red'
+                        // ctx.font = '14px Microsoft yahei'
+
+                        ctx.fillStyle = '#fff'
+                        ctx.font = '14px Microsoft yahei'
+                        let a = name //姓名
+                        ctx.fillText(a, 0, -60)
+                        ctx.restore()
+
+                        // ctx.save(); //最外层轨道
+                        ctx.beginPath()
+                        ctx.strokeStyle = 'rgba(255, 255, 255, .4)'
+                        ctx.lineWidth = 10
+                        ctx.arc(0, 0, radius, 0, 11 * deg0, false)
+                        ctx.stroke()
+                        ctx.restore()
+                    })()
+                }
+                // 终点圆
+                function Dot() {
+                    this.x = 0
+                    this.y = 0
+                    this.draw = function(ctx) {
+                        ctx.save()
+                        ctx.beginPath()
+                        ctx.fillStyle = '#fba64e'
+                        ctx.arc(this.x, this.y, 14, 0, Math.PI * 2, false)
+                        ctx.fill()
+                        ctx.restore()
+                    }
+                }
+                // 分数值
+                function text(process) {
+                    ctx.save()
+                    ctx.rotate(10 * deg0)
+                    ctx.fillStyle = '#fff'
+                    ctx.font = '60px Microsoft yahei'
+                    ctx.textAlign = 'center'
+                    ctx.textBaseLine = 'top'
+                    ctx.fillText(process, 0, 10)
+                    ctx.restore()
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        <div id="homo">
+            <p>信用分解读</p>
+            <canvas id="canvas" width="600" height="400"></canvas>
+        </div>
+        <div class="tip">
+            <p>我的壹诺信用分<span class="score">625</span>分,快来PK!</p>
+            <p>大家一起来晒信用分，让信用创造价值！</p>
+        </div>
+        <div class="btn">
+            <div class="btn-one" onclick="down()">查看我的信用分</div>
+            <div class="btn-two" onclick="down()">立即下载壹诺信用APP</div>
+        </div>
+    </body>
+</html>

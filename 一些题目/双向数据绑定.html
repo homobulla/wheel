@@ -11,95 +11,176 @@
             <main>
                 <p>请输入:</p>
                 <input type="text" id="input" />
+                <input type="text" id="input2" />
                 <p id="p"></p>
+                <p id="p2"></p>
             </main>
         </div>
     </body>
     <script>
-        // 订阅发布中心
-        let uid = 0
-        // 用于储存订阅者并发布消息
-        class Dep {
-            constructor() {
-                // 标记，用于区分新watcher和只改变属性值产生的watcher
-                this.id = uid++
-                // 所有订阅者
-                this.subs = []
-            }
-            // 触发addDep方法，参数为Dep实例本身
-            depend() {
-                Dep.target.addDep(this)
-            }
-            //添加订阅者
-            addSub(sub) {
-                this.subs.push(sub)
-            }
-            // 通知所有订阅者，更细
-            notity() {
-                this.subs.forEach(sub => {
-                    sub.update()
-                })
-            }
-        }
-        // 静态属性，指向当前的watcher
-        Dep.target = null
-
-        // 监听者 Observer
-        class Observer {
-            constructor(value) {
-                this.value = value
-                this.walk(value)
-            }
-            // 监听每个属性
-            walk(value) {
-                Object.keys(value).forEach(key => {
-                    this.convert(key, value[key])
-                })
-            }
-            // 具体监听方法
-            convert(key, val) {
-                defineReactive(this.value, key, val)
-            }
-        }
-        function defineReactive(obj, key, val) {
-            const dep = new Dep()
-            let chlidOb = observer(val)
-            Object.defineProperty(obj, key, {
-                enumerable: true,
-                configurable: true,
-                get() {
-                    // 如果Dep类存在target属性，将其添加到dep实例的subs数组中
-                    // target指向一个Watcher实例，每个Watcher都是一个订阅者
-                    // Watcher实例在实例化过程中，会读取data中的某个属性，从而触发当前get方法
-                    if (Dep.target) {
-                        dep.depend()
-                    }
-                    return val
-                },
-                set(newVal) {
-                    if (val === newVal) return
-                    val = newVal
-                    //  对新值进行监听
-                    chlidOb = observer(newVal)
-                    // 通知所有订阅者，数值被改变了
-                    dep.notity()
+        const Vue = (function() {
+            // 订阅发布中心
+            let uid = 0
+            // 用于储存订阅者并发布消息
+            class Dep {
+                constructor() {
+                    // 标记，用于区分新watcher和只改变属性值产生的watcher
+                    this.id = uid++
+                    // 所有订阅者
+                    this.subs = []
                 }
-            })
-        }
-
-        function observer(value) {
-            // 当值不存在，或者不是复杂数据类型时，不再需要继续深入监听
-            if (!value || typeof value !== 'object') {
-                return
+                // 触发addDep方法，参数为Dep实例本身
+                depend() {
+                    Dep.target.addDep(this)
+                }
+                //添加订阅者
+                addSub(sub) {
+                    this.subs.push(sub)
+                }
+                // 通知所有订阅者，更细
+                notity() {
+                    this.subs.forEach(sub => {
+                        sub.update()
+                    })
+                }
             }
-            return new Observer(value)
-        }
+            // 静态属性，指向当前的watcher
+            Dep.target = null
 
-        // 订阅者实现
-        class Watch {
-            constructor(vm, expOrFn, cb) {
-                this.depIds = {} // hash储存订阅者的id,避免重复的订阅者
+            // 监听者 Observer
+            class Observer {
+                constructor(value) {
+                    this.value = value
+                    this.walk(value)
+                }
+                // 监听每个属性
+                walk(value) {
+                    Object.keys(value).forEach(key => {
+                        this.convert(key, value[key])
+                    })
+                }
+                // 具体监听方法
+                convert(key, val) {
+                    defineReactive(this.value, key, val)
+                }
             }
-        }
+            function defineReactive(obj, key, val) {
+                const dep = new Dep()
+                let chlidOb = observer(val)
+                Object.defineProperty(obj, key, {
+                    enumerable: true,
+                    configurable: true,
+                    get() {
+                        // 如果Dep类存在target属性，将其添加到dep实例的subs数组中
+                        // target指向一个Watcher实例，每个Watcher都是一个订阅者
+                        // Watcher实例在实例化过程中，会读取data中的某个属性，从而触发当前get方法
+                        if (Dep.target) {
+                            dep.depend()
+                        }
+                        return val
+                    },
+                    set(newVal) {
+                        if (val === newVal) return
+                        val = newVal
+                        //  对新值进行监听
+                        chlidOb = observer(newVal)
+                        // 通知所有订阅者，数值被改变了
+                        dep.notity()
+                    }
+                })
+            }
+
+            function observer(value) {
+                // 当值不存在，或者不是复杂数据类型时，不再需要继续深入监听
+                if (!value || typeof value !== 'object') {
+                    return
+                }
+                return new Observer(value)
+            }
+
+            // 订阅者实现
+            class Watcher {
+                constructor(vm, expOrFn, cb) {
+                    this.depIds = {} // hash储存订阅者的id,避免重复的订阅者
+                    this.vm = vm // 被订阅的数据一定来源于当前的Vue实例
+                    this.cb = cb // 数据更新时要做的事
+                    this.expOrFn = expOrFn // 被订阅的数据
+                    this.val = this.get() // 维护更新之前的数据
+                }
+                update() {
+                    this.run()
+                }
+                addDep(dep) {
+                    // 先判断depiOds的hash中是否含有当前id,若无则是新的watcher,因此可以添加到dep的数组中
+                    if (!this.depIds.hasOwnProperty(dep.id)) {
+                        dep.addSub(this)
+                        this.depIds[dep.id] = dep
+                    }
+                }
+                run() {
+                    const val = this.get()
+                    if (val !== this.val) {
+                        this.val = val
+                        this.cb.call(this.vm, val)
+                    }
+                }
+                get() {
+                    // 当前订阅者（watcher)读取被订阅数据的最新更新后的值时，通知订阅管理员收集当前订阅者
+                    Dep.target = this
+                    const val = this.vm._data[this.expOrFn]
+                    Dep.target = null
+                    return val
+                }
+            }
+
+            class Vue {
+                constructor(options = {}) {
+                    // 简化了$options的处理
+                    this.$options = options
+                    // 简化了对data的处理
+                    let data = (this._data = this.$options.data)
+                    // 将所有data最外层属性代理到Vue实例上
+                    Object.keys(data).forEach(key => this._proxy(key))
+                    // 监听数据
+                    observer(data)
+                }
+                // 对外暴露调用订阅者的接口，内部主要在指令中使用订阅者
+                $watch(expOrFn, cb) {
+                    new Watcher(this, expOrFn, cb)
+                }
+                _proxy(key) {
+                    Object.defineProperty(this, key, {
+                        configurable: true,
+                        enumerable: true,
+                        get: () => this._data[key],
+                        set: val => {
+                            this._data[key] = val
+                        }
+                    })
+                }
+            }
+            return Vue
+        })()
+
+        let demo = new Vue({
+            data: {
+                text: '',
+                name: '111'
+            }
+        })
+
+        const p = document.getElementById('p')
+        const p2 = document.getElementById('p2')
+
+        const input = document.getElementById('input')
+
+        input.addEventListener('keyup', function(e) {
+            demo.text = e.target.value
+        })
+        input2.addEventListener('keyup', function(e) {
+            demo.name = e.target.value
+        })
+        demo.$watch('text', str => (p.innerHTML = str))
+        demo.$watch('name', str => (p2.innerHTML = str))
     </script>
 </html>
