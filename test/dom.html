@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+    <head></head>
+
+    <body>
+        <div>
+            <span>f</span>
+            <span>o</span>
+            <p></p>
+            <span>o</span>
+            <p></p>
+        </div>
+    </body>
+    <script>
+        let maxChildrenCount = 0;
+        let maxDOMTreeDepth = 0;
+        let totalElementsCount = 1;
+        // let total = [...document.querySelectorAll('*')].map(e => e.nodeName).length // 直接统计页面元素总数
+        // 实际上一轮 DFS ,三个计数器即可全部搞定
+        function DFS(e, depth) {
+            // 没有子节点了, 意味着 DFS 已经抵达一个叶节点, 更新深度计数器
+            if (e.children.length === 0) {
+                maxDOMTreeDepth = depth > maxDOMTreeDepth ? depth : maxDOMTreeDepth;
+                return;
+            }
+            let stack = Array.from(e.children);
+            stack.forEach(n => {
+                // 更新总标签数
+                totalElementsCount += 1;
+                console.log(n, "n");
+                // 更新最大子元素数
+                if (stack.length > maxChildrenCount) maxChildrenCount = stack.length;
+                DFS(n, depth + 1);
+            });
+        }
+        DFS(document.querySelector("html"), 1);
+        console.log({
+            totalElementsCount,
+            maxDOMTreeDepth,
+            maxChildrenCount
+        });
+    </script>
+</html>
