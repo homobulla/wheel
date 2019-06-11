@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>demo</title>
+        <style>
+            input {
+                border: 0;
+                outline: none;
+                width: 18px;
+                height: 18px;
+                margin: 0;
+                padding: 0;
+            }
+            .content {
+                width: 100%;
+            }
+            .content > div {
+                display: inline-block;
+                width: 300px;
+                min-width: 50px;
+                text-align: center;
+                position: relative;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .drag {
+                position: absolute;
+                right: 0;
+                width: 4px;
+                height: 10px;
+                background: red;
+                cursor: move;
+            }
+            .content {
+                white-space: nowrap;
+            }
+            .wrap {
+                width: 100%;
+                float: left;
+                overflow-x: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <div class="content">
+                <div class="cont-check">
+                    <input type="checkbox" />
+                    <i class="drag demo"></i>
+                </div>
+                <div class="cont-index">序号<i class="drag"></i></div>
+                <div class="cont-date">数据<i class="drag"></i></div>
+                <div class="cont-status">状态</div>
+			</div>
+			<div class="content-wrap">
+            <div class="content">
+                <div class="cont-check">
+                    <input type="checkbox" />
+                </div>
+                <div class="cont-index">1</div>
+                <div class="cont-date">ssfdssfdfdfssfdfdfssfdfdfssfdfdfssfdfdfssfdfdfssfdfdfssfdfdfssfdfdfssfdfdfssfdfdfssfdfdfssfdfdfssfdfdfssfdfdfssfdfdfssfdfdfssfdfdffdf</div>
+                <div class="cont-status">在线</div>
+			</div>
+		</div>
+        </div>
+    </body>
+    <script>
+        var dragList = document.querySelectorAll(".drag");
+        Array.prototype.forEach.call(dragList, function(drag, index) {
+            var left = drag.parentNode;
+            while (left.nodeType == 3) {
+                left = left.previousSibling;
+            }
+            var lW = left.offsetWidth;
+            drag.onmousedown = function(event) {
+                var event = event || window.event;
+                var diffX = event.clientX - drag.offsetLeft;
+                var starX = event.clientX;
+                document.onmousemove = function(event) {
+                    var event = event || window.event;
+                    var moveX = event.clientX - diffX;
+                    var leftX = event.clientX - starX;
+                    if (moveX < 0) {
+                        moveX = 0;
+                    } else if (moveX > window.innerWidth - drag.offsetWidth) {
+                        moveX = window.innerWidth - drag.offsetWidth;
+                    }
+                    changeCss(index, lW, leftX);
+                };
+                document.onmouseup = function(event) {
+                    lW = left.offsetWidth; // 二次滑动
+                    this.onmousemove = null;
+                    this.onmouseup = null;
+                };
+            };
+
+            function changeCss(index, lW, leftX) {
+                var arr = ["cont-check", "cont-index", "cont-date", "cont-status"];
+                var domList = document.getElementsByClassName(arr[index]);
+                for (var i = 0; i < domList.length; i++) {
+                    domList[i].style.width = lW + leftX + "px";
+                }
+            }
+        });
+    </script>
+</html>
