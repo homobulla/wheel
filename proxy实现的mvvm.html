@@ -115,7 +115,7 @@
                             replaceTxt();
                             function replaceTxt() {
                                 node.textContent = txt.replace(reg, (matched, placeholder) => {
-                                    console.log(matched, placeholder, "placeholder");
+                                    console.log("matched:" + matched, "placeholder:" + placeholder, "placeholder");
                                     new Watcher(vm, placeholder, replaceTxt); // 监听变化，进行匹配替换内容
                                     return placeholder.split(".").reduce((val, key) => {
                                         return val[key];
@@ -149,9 +149,8 @@
                     Dep.target = this;
                     let arr = exp.split(".");
                     let val = vm;
-                    console.log(val, "val");
+
                     arr.forEach(key => {
-                        console.log(val, key);
                         val = val[key];
                     });
                     Dep.target = null;
