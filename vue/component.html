@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Document</title>
+    </head>
+    <body>
+        <div id="app">
+            <div @changepage="page++">
+                {{ page }}
+            </div>
+            <homo-bulla></homo-bulla>
+            <custom-input v-model="searchText"></custom-input>
+            <input v-bind:value="searchText" v-on:input="searchText = $event.target.value" />
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script>
+            Vue.component("homo-bulla", {
+                // props: ["count"],
+                data() {
+                    return {
+                        count: 10
+                    };
+                },
+                template: `<button @click='$emit("changepage");count++'>{{count}}</button>`
+            });
+            Vue.component("custom-input", {
+                props: ["value"],
+                template: `
+							<input
+							v-bind:value="value"
+							v-on:input="$emit('input', $event.target.value)"
+							>
+						`
+            });
+            new Vue({
+                el: "#app",
+                data() {
+                    return {
+                        page: 1,
+                        searchText: "ss"
+                    };
+                }
+            });
+        </script>
+    </body>
+</html>

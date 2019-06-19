@@ -8,3 +8,6 @@ Array.prototype.multiply = function() {
 const a = [1, 2, 3, 4, 5];
 a.multiply();
 console.log(a);
+
+let ba = Array.prototype.copyWithin.call([1, 2, 3], (2, 1));
+console.log(ba);
