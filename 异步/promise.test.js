@@ -11,14 +11,22 @@ setTimeout(() => {
         console.log(10);
         resolve(1);
     })
-        .then(res => {
-            return Promise.resolve(
-                setTimeout(() => {
-                    res = res * 100;
-                }, 1000)
-            );
+        .then(function(string) {
+            return new Promise(function(resolve, reject) {
+                setTimeout(function() {
+                    string += "bar";
+                    resolve(string);
+                }, 3000);
+            });
         })
         .then(res => {
             console.log(res, "res");
         });
 }, 0);
+
+const p = Promise.reject("test");
+p.then(null, res => {
+    console.log(res);
+});
+
+p.then().catch(r => console.log(r, "rrrrr"));

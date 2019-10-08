@@ -3,7 +3,7 @@
  洋葱模型，类栈 -> 先进后出 next机制 
  * @Author: your name
  * @Date: 2019-09-27 12:06:19
- * @LastEditTime: 2019-09-27 12:48:16
+ * @LastEditTime: 2019-10-08 11:15:09
  * @LastEditors: Please set LastEditors
  */
 
@@ -62,6 +62,8 @@ function compose(middleware) {
     }
 
     return function(ctx, next) {
+        //  本质上来讲还是对compose函数的异步流程没完全理解，middleware里的next函数会调用所有后续的中间件
+        //  当第一次调用next函数，disptch函数会执行middleware.length次
         let index = -1; // 每个中间件只允许调用一次next
         return dispatch(0); // 从中间件第一个开始依次执行
         function dispatch(i) {
