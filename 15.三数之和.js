@@ -72,6 +72,6 @@ var threeSum = function(nums) {
 };
 
 // let r = threeSum([-1, 0, 1, 2, -1, -4]);
-let r = threeSum([-4, -1, -1, 0, 1, 2]);
+let r = threeSum([9, 9, 9]);
 
 console.log(r, "rrrr");

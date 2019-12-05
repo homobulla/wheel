@@ -13,9 +13,11 @@
     <script>
         let maxChildrenCount = 0;
         let maxDOMTreeDepth = 0;
-        let totalElementsCount = 1;
-        // let total = [...document.querySelectorAll('*')].map(e => e.nodeName).length // 直接统计页面元素总数
-        // 实际上一轮 DFS ,三个计数器即可全部搞定
+		let totalElementsCount = 1;
+		let htmlTotal = [...document.querySelectorAll('*')].map(e => e.nodeName) // 直接统计页面元素总数
+		var htmlTypeCount = [...new Set([...document.querySelectorAll('*')].map(e => e.nodeName.toLocaleLowerCase()))] // 多少种标签
+		console.log(htmlTotal,htmlTypeCount)
+		// 实际上一轮 DFS ,三个计数器即可全部搞定
         function DFS(e, depth) {
             // 没有子节点了, 意味着 DFS 已经抵达一个叶节点, 更新深度计数器
             if (e.children.length === 0) {

@@ -24,9 +24,11 @@ setTimeout(() => {
         });
 }, 0);
 
-const p = Promise.reject("test");
-p.then(null, res => {
+let p = new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve("helloworld");
+    }, 5000);
+});
+p.then(res => {
     console.log(res);
 });
-
-p.then().catch(r => console.log(r, "rrrrr"));

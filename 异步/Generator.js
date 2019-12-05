@@ -91,17 +91,17 @@
 // }
 const co = require("co");
 const calculat = num => {
-    return new Promise((resolve, reject) => {
-        resolve(num);
-    });
+	return new Promise((resolve, reject) => {
+		resolve(num);
+	});
 };
 
 function* gen() {
-    var a = yield calculat(222);
-    var b = yield calculat(a * 10);
-    return b;
+	var a = yield calculat(222);
+	var b = yield calculat(a * 10);
+	return b;
 }
 
 co(gen).then(res => {
-    console.log(res, "rrrrrrrr");
+	console.log(res, "rrrrrrrr");
 });

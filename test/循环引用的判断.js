@@ -35,6 +35,25 @@ function isCircularObj(obj) {
     })(obj);
     return flag;
 }
+// Test CircularObj
+function isCircularObj(obj) {
+    let stack = [];
+    let flag = false;
+    (function circul(obj) {
+        for (var len, len = stack.length; len--; ) {
+            if (stack[len] === obj) {
+                flag = true;
+                return;
+            }
+        }
+        stack.push(obj);
+        for (let k in obj) {
+            const val = obj[k];
+            if (typeof val === "object") circul(val);
+        }
+    })(obj);
+    return flag;
+}
 
 /**
  * 重写JSON.stringify 修改无法序列化循环引用对象的问题

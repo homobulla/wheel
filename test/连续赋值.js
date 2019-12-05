@@ -20,6 +20,6 @@ obj.b = obj.a = { n: 1 };
 // 输出:
 // "a" {n: 1}
 // "b" {n: 1}
-
+console.log(obj);
 obj.a; // isA
 obj.b; // {n: 1}

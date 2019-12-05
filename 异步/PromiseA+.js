@@ -2,7 +2,7 @@
  * @Description: 实现一个符合A+规范的Promise
  * @Author: your name
  * @Date: 2019-09-27 16:15:11
- * @LastEditTime: 2019-09-27 18:29:36
+ * @LastEditTime: 2019-12-05 18:46:10
  * @LastEditors: Please set LastEditors
  */
 /**
@@ -27,156 +27,205 @@ const PENDING = "pending";
 const FULFILLED = "fulfilled";
 const REJECTED = "rejected";
 function Promise(executor) {
-    let self = this;
-    self.status = PENDING;
-    self.onFulfilled = []; //成功的回调
-    self.onRejected = []; //失败的回调
-    //PromiseA+ 2.1
-    function resolve(value) {
-        if (self.status === PENDING) {
-            self.status = FULFILLED;
-            self.value = value;
-            self.onFulfilled.forEach(fn => fn()); //PromiseA+ 2.2.6.1
-        }
-    }
+	let self = this;
+	self.status = PENDING;
+	self.onFulfilled = []; //成功的回调
+	self.onRejected = []; //失败的回调
+	//PromiseA+ 2.1
+	function resolve(value) {
+		if (self.status === PENDING) {
+			self.status = FULFILLED;
+			self.value = value;
+			self.onFulfilled.forEach(fn => fn()); //PromiseA+ 2.2.6.1
+		}
+	}
 
-    function reject(reason) {
-        if (self.status === PENDING) {
-            self.status = REJECTED;
-            self.reason = reason;
-            self.onRejected.forEach(fn => fn()); //PromiseA+ 2.2.6.2
-        }
-    }
+	function reject(reason) {
+		if (self.status === PENDING) {
+			self.status = REJECTED;
+			self.reason = reason;
+			self.onRejected.forEach(fn => fn()); //PromiseA+ 2.2.6.2
+		}
+	}
 
-    try {
-        executor(resolve, reject);
-    } catch (e) {
-        reject(e);
-    }
+	try {
+		console.log(resolve, reject, executor)
+		executor(resolve, reject);
+	} catch (e) {
+		reject(e);
+	}
 }
 
-Promise.prototype.then = function(onFulfilled, onRejected) {
-    //PromiseA+ 2.2.1 / PromiseA+ 2.2.5 / PromiseA+ 2.2.7.3 / PromiseA+ 2.2.7.4
-    onFulfilled = typeof onFulfilled === "function" ? onFulfilled : value => value;
-    onRejected =
-        typeof onRejected === "function"
-            ? onRejected
-            : reason => {
-                  throw reason;
-              };
-    let self = this;
-    //PromiseA+ 2.2.7
-    let promise2 = new Promise((resolve, reject) => {
-        if (self.status === FULFILLED) {
-            //PromiseA+ 2.2.2
-            //PromiseA+ 2.2.4 --- setTimeout
-            setTimeout(() => {
-                try {
-                    //PromiseA+ 2.2.7.1
-                    let x = onFulfilled(self.value);
-                    console.log("zhewe");
-                    resolvePromise(promise2, x, resolve, reject);
-                } catch (e) {
-                    //PromiseA+ 2.2.7.2
-                    reject(e);
-                }
-            });
-        } else if (self.status === REJECTED) {
-            //PromiseA+ 2.2.3
-            setTimeout(() => {
-                try {
-                    let x = onRejected(self.reason);
-                    resolvePromise(promise2, x, resolve, reject);
-                } catch (e) {
-                    reject(e);
-                }
-            });
-        } else if (self.status === PENDING) {
-            self.onFulfilled.push(() => {
-                setTimeout(() => {
-                    try {
-                        let x = onFulfilled(self.value);
-                        resolvePromise(promise2, x, resolve, reject);
-                    } catch (e) {
-                        reject(e);
-                    }
-                });
-            });
-            self.onRejected.push(() => {
-                setTimeout(() => {
-                    try {
-                        let x = onRejected(self.reason);
-                        resolvePromise(promise2, x, resolve, reject);
-                    } catch (e) {
-                        reject(e);
-                    }
-                });
-            });
-        }
-    });
-    return promise2;
+Promise.prototype.then = function (onFulfilled, onRejected) {
+	//PromiseA+ 2.2.1 / PromiseA+ 2.2.5 / PromiseA+ 2.2.7.3 / PromiseA+ 2.2.7.4
+	// 这儿是链式调用的关键 
+	onFulfilled = typeof onFulfilled === "function" ? onFulfilled : value => value;
+	onRejected =
+		typeof onRejected === "function"
+			? onRejected
+			: reason => {
+				throw reason;
+			};
+	let self = this;
+
+	//PromiseA+ 2.2.7
+	let promise2 = new Promise((resolve, reject) => {
+		if (self.status === FULFILLED) {
+			//PromiseA+ 2.2.2
+			//PromiseA+ 2.2.4 --- setTimeout
+			// 模拟微任务，本质还是宏任务
+			new MutationObserver(function () {
+				console.log('mutate');
+			}).observe(document.body, {
+				attributes: true
+			});
+			document.body.setAttribute('data-random', Math.random());
+			setTimeout(() => {
+				try {
+					//PromiseA+ 2.2.7.1
+					let x = onFulfilled(self.value);
+					console.log("zhewe");
+					resolvePromise(promise2, x, resolve, reject);
+				} catch (e) {
+					//PromiseA+ 2.2.7.2
+					reject(e);
+				}
+			});
+		} else if (self.status === REJECTED) {
+			//PromiseA+ 2.2.3
+			new MutationObserver(function () {
+				console.log('mutate');
+			}).observe(document.body, {
+				attributes: true
+			});
+			document.body.setAttribute('data-random', Math.random());
+			setTimeout(() => {
+				try {
+					let x = onRejected(self.reason);
+					resolvePromise(promise2, x, resolve, reject);
+				} catch (e) {
+					reject(e);
+				}
+			});
+		} else if (self.status === PENDING) {
+			self.onFulfilled.push(() => {
+				setTimeout(() => {
+					try {
+						let x = onFulfilled(self.value);
+						resolvePromise(promise2, x, resolve, reject);
+					} catch (e) {
+						reject(e);
+					}
+				});
+			});
+			self.onRejected.push(() => {
+				setTimeout(() => {
+					try {
+						let x = onRejected(self.reason);
+						resolvePromise(promise2, x, resolve, reject);
+					} catch (e) {
+						reject(e);
+					}
+				});
+			});
+		}
+	});
+	return promise2;
 };
 
 function resolvePromise(promise2, x, resolve, reject) {
-    let self = this;
-    //PromiseA+ 2.3.1
-    if (promise2 === x) {
-        reject(new TypeError("Chaining cycle"));
-    }
-    console.log(x, "xxxxxxxxxx");
-    if ((x && typeof x === "object") || typeof x === "function") {
-        let used; //PromiseA+2.3.3.3.3 只能调用一次
-        try {
-            let then = x.then;
-            if (typeof then === "function") {
-                //PromiseA+2.3.3
-                then.call(
-                    x,
-                    y => {
-                        //PromiseA+2.3.3.1
-                        if (used) return;
-                        used = true;
-                        resolvePromise(promise2, y, resolve, reject);
-                    },
-                    r => {
-                        //PromiseA+2.3.3.2
-                        if (used) return;
-                        used = true;
-                        reject(r);
-                    }
-                );
-            } else {
-                //PromiseA+2.3.3.4
-                if (used) return;
-                used = true;
-                resolve(x);
-            }
-        } catch (e) {
-            //PromiseA+ 2.3.3.2
-            if (used) return;
-            used = true;
-            reject(e);
-        }
-    } else {
-        //PromiseA+ 2.3.3.4
-        resolve(x);
-    }
+	let self = this;
+	//PromiseA+ 2.3.1
+	if (promise2 === x) {
+		reject(new TypeError("Chaining cycle"));
+	}
+	console.log(x, "xxxxxxxxxx");
+	if ((x && typeof x === "object") || typeof x === "function") {
+		let used; //PromiseA+2.3.3.3.3 只能调用一次
+		try {
+			let then = x.then;
+			if (typeof then === "function") {
+				//PromiseA+2.3.3
+				then.call(
+					x,
+					y => {
+						//PromiseA+2.3.3.1
+						if (used) return;
+						used = true;
+						resolvePromise(promise2, y, resolve, reject);
+					},
+					r => {
+						//PromiseA+2.3.3.2
+						if (used) return;
+						used = true;
+						reject(r);
+					}
+				);
+			} else {
+				//PromiseA+2.3.3.4
+				if (used) return;
+				used = true;
+				resolve(x);
+			}
+		} catch (e) {
+			//PromiseA+ 2.3.3.2
+			if (used) return;
+			used = true;
+			reject(e);
+		}
+	} else {
+		//PromiseA+ 2.3.3.4
+		resolve(x);
+	}
 }
-Promise.defer = Promise.deferred = function() {
-    let dfd = {};
-    dfd.promise = new Promise((resolve, reject) => {
-        dfd.resolve = resolve;
-        dfd.reject = reject;
-    });
-    return dfd;
+Promise.defer = Promise.deferred = function () {
+	let dfd = {};
+	dfd.promise = new Promise((resolve, reject) => {
+		dfd.resolve = resolve;
+		dfd.reject = reject;
+	});
+	return dfd;
 };
 console.log(8);
 setTimeout(() => {
-    console.log(4);
+	console.log(4);
 });
 var p1 = new Promise((resolve, reject) => {
-    console.log(1);
+	console.log(1);
 });
-p1.then(console.log(2)).then(console.log(455));
+p1.then(res => res).then(res => {
+	console.log(res, 'res')
+});
 console.log(7);
-module.exports = Promise;
+
+// module.exports = Promise;
+
+// return
+// const PENDING = 'pending';
+// const FULFILLED = 'fulfilled';
+// const REJECTED = 'rejected';
+
+// function Promise(executor) {
+// 	let self = this;
+// 	self.status = PENDING;
+// 	self.onRejected = [];
+// 	self.onFulfilled = [];
+
+// 	function resolve(value) {
+// 		if (self.status !== PENDING) return;
+// 		self.value = value;
+// 		self.onFulfilled.forEach(fn => fn())
+// 	}
+// 	function reject(reason) {
+// 		if (self.status !== PENDING) return;
+// 		self.reason = resolve;
+// 		self.onRejected.forEach(fn => fn())
+
+// 	}
+// 	try {
+// 		executor(resolve, reject)
+// 	} catch (e) {
+// 		reject(e)
+// 	}
+// }
+
