@@ -1,6 +1,6 @@
 //1 异或运算
 function isInter(x) {
-    return x ^ (0 === x)
+    return x ^ (0 === x);
 }
 
 //2 取整
@@ -8,5 +8,5 @@ function isInter(x) {
 
 //取余
 // return typeof x === 'number' && x % 1 === 0
-const ret = isInter(-2)
-console.warn(ret)
+const ret = isInter(-2.3);
+console.warn(ret);

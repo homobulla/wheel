@@ -6,8 +6,33 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <title>Document</title>
         <style>
-            .FileGroup_Real_Time_Screen_SendText div:nth-of-type(-n + 3) button {
+            .FileGroup_Real_Time_Screen_SendText
+                div:nth-of-type(-n + 3)
+                button {
                 color: red;
+            }
+            .demo {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 0;
+                width: 75px;
+                height: 30px;
+                font-size: 13px;
+                border: 1px solid #6cbd45;
+                color: #6cbd45;
+                background-color: #fff;
+                cursor: pointer;
+            }
+            .demo-inner {
+                width: 79px;
+                height: 0px;
+                overflow: hidden;
+                box-shadow: 1px 2px 2px red;
+            }
+            .demo-inner p {
+                height: 30px;
+                line-height: 30px;
             }
         </style>
     </head>
@@ -18,5 +43,21 @@
             <div><button>11111</button></div>
             <div><button>11111</button></div>
         </div>
+        <div class="demo">
+            ceshi一下
+            <div class="demo-inner">
+                <p>11111</p>
+                <p>22222</p>
+                <p>33333</p>
+            </div>
+        </div>
     </body>
+    <script>
+        function handler(dom) {
+            console.log("鼠标上来了", dom.target.children[0].children.length);
+        }
+        [...document.querySelectorAll(".demo")].forEach(i =>
+            i.addEventListener("mouseover", handler)
+        );
+    </script>
 </html>

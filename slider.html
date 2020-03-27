@@ -9,7 +9,7 @@
             * {
                 margin: 0;
                 padding: 0;
-                background: yellowgreen;
+               
             }
             .container {
                 width: 300px;
@@ -34,7 +34,12 @@
             .drag {
                 background: #eee;
             }
-        </style>
+		</style>
+			<script src="https://cdn.bootcss.com/eruda/1.5.8/eruda.min.js"></script>
+			<script>
+			
+			eruda.init();
+			</script>
     </head>
 
     <body>
@@ -44,7 +49,7 @@
             <div class="right">right</div>
         </div>
 
-        <script>
+        <!-- <script>
             var dragDom = document.querySelector(".drag"),
                 left = document.querySelector(".left"),
                 right = document.querySelector(".right"),
@@ -77,6 +82,6 @@
             dragDom.addEventListener("mouseup ", function() {
                 dragDom.removeEventListener("mousemove", mouseMoveHandler);
             });
-        </script>
+        </script> -->
     </body>
 </html>

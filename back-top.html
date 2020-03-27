@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>返回顶部</title>
+    <style>
+        #outer { height: 900px; width: 100px; padding: 10px 50px; border: 1px solid;  }
+		button{
+			position: fixed;
+			bottom: 0;
+		}
+    </style>
+</head>
+<body>
+    <div id="outer">
+        <div id="inner"></div>
+    </div>
+    <button onclick="toTop(outer)">返回顶部</button>
+    <script>
+        function toTop(ele) {
+			window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+        // 初始化
+        window.onload = () => {
+            for (let i = 0; i < 233; i++) inner.innerText += `第${i}行\n`;
+        }
+    </script>
+</body>
+</html>

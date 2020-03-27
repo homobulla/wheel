@@ -4,25 +4,30 @@
 // 则把这个属性值添加到数组里，再递归遍历这个属性值即可。
 function cycleDetector(obj) {
     let hasCircle = false, //用一个变量去标记是否有环
-        cache = [] //保存值为对象的属性值
-    ;(function(obj) {
-        Object.values(obj).forEach(value => {
-            if (
-                Object.prototype.toString.call(value) === '[object Object]' &&
-                value !== null
-            ) {
-                const index = cache.indexOf(value)
+        cache = []; //保存值为对象的属性值
+    (function(obj) {
+        Object.values(obj).forEach((value) => {
+            if (Object.prototype.toString.call(value) === "[object Object]" && value !== null) {
+                const index = cache.indexOf(value);
                 if (index !== -1) {
                     //如果cache中存在这个value，则表示有环
-                    hasCircle = true
-                    return
+                    hasCircle = true;
+                    return;
                 } else {
-                    cache.push(value)
-                    arguments.callee(value)
-                    if (!hasCircle) cache.pop() //递归调用后再判断是否有环，没有的话就把value从cache数组里弹出
+                    cache.push(value);
+                    arguments.callee(value);
+                    if (!hasCircle) cache.pop(); //递归调用后再判断是否有环，没有的话就把value从cache数组里弹出
                 }
             }
-        })
-    })(obj)
-    return hasCircle
+        });
+    })(obj);
+    return hasCircle;
 }
+
+var obj = {
+    a: 1,
+    b: 2
+};
+obj.c = obj;
+var a = cycleDetector(obj);
+console.log(a, obj);
