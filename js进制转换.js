@@ -10,14 +10,17 @@ var b = (0.2).toString(2);
 // js中的计算
 // url:http://zouyang1230.com/blog/archives/805
 function Add(nNum1, nNum2) {
-    //如果其中一个相加参数数为 0，则返回另一参数；
-    if (nNum1 == 0 || nNum2 == 0) return nNum1 || nNum2;
-    var ntempNum;
-    while (nNum2 != 0) {
-        ntempNum = nNum1 ^ nNum2;
-        nNum2 = (nNum1 & nNum2) << 1;
-        nNum1 = ntempNum;
-    }
-    return nNum1;
+  //如果其中一个相加参数数为 0，则返回另一参数；
+  if (nNum1 == 0 || nNum2 == 0) return nNum1 || nNum2;
+  var ntempNum;
+  while (nNum2 != 0) {
+    ntempNum = nNum1 ^ nNum2;
+    nNum2 = (nNum1 & nNum2) << 1;
+    nNum1 = ntempNum;
+  }
+  return nNum1;
 }
-console.log(Add(1, 222));
+console.log(a, b, 'aaaaaaaaaaa');
+var a = 1;
+// function a() {}
+console.log(Add(a, b));

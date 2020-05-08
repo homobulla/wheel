@@ -10,7 +10,7 @@ function calculateMedian(arr) {
     arr.sort((a,b) => a-b );
     //2. 中位数定义
     const half = Math.floor(arr.length / 2);
-    console.log(half,'half')
+    console.log(half,'half',arr.length % 2)
     return arr.length % 2 !== 0 ?
         arr[half] :
         (arr[half-1] + arr[half]) / 2

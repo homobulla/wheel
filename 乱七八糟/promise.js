@@ -43,3 +43,4 @@ function flatten(arr) {
 var a = Array(100)
 	.fill()
 	.map((_, i) => i + 1);
+console.log(flatten([1,[1,[1,2],1],3,4]))

@@ -46,4 +46,4 @@ Chain.prototype.find = function (key) {
 var chainDemo = new Chain(1,'sss');
 chainDemo.insertAfter(1,2,'ddd')
 chainDemo.insertAfter(1,3,'fff')
-
+console.log(chainDemo,'demo')

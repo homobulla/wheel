@@ -115,6 +115,7 @@
                             replaceTxt();
                             function replaceTxt() {
                                 node.textContent = txt.replace(reg, (matched, placeholder) => {
+                                    // 这里的 replace 有问题。
                                     console.log("matched:" + matched, "placeholder:" + placeholder, "placeholder");
                                     new Watcher(vm, placeholder, replaceTxt); // 监听变化，进行匹配替换内容
                                     return placeholder.split(".").reduce((val, key) => {
