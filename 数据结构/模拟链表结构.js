@@ -1,229 +1,216 @@
-function Chain(key, value) {
-	this.next = null;
-	this.key = key;
-	this.value = value;
-	this.length = 1;
+
+// 单项链表
+function LinkedList(){
+    let Node = function(element){
+        this.element = element;
+        this.next = null;
+    }
+    let length = 0;
+    let head = null; // head就是链表的第一项，不要割裂的看待。
+    this.append = function (element){
+        let node = new Node(element),
+        current;
+        // 如果head为null,则当前append的是列表第一个元素
+        if(head === null){
+            head = node;
+        } else {
+            // 非第一项，则找最后一项插入
+            current = head;
+            while (current.next){
+                current = current.next;
+            }
+            current.next = node;
+        }
+        // 长度加一
+        length++;
+    }
+    // 插入
+    this.insert = function (position,element){
+        if(position > -1 && position <= length) {
+            let node = new Node(element),
+                current = head,
+                previous,
+                index = 0;
+                if(position === 0){
+                    node.next = current;
+                    head = node;
+                } else {
+                    while (index++ <position){
+                        previous = current;
+                        current = current.next;
+                    }
+                    previous.next = node;
+                    node.next = current;
+                }
+                length++;
+                return true;
+        } else {
+            return false;
+        }
+    }
+    // 删除特定位置的节点
+    this.removeAt = function(position){
+        // 判断边界条件
+        if(position > -1 && position < length){
+            let current = head,
+                previous,
+                index = 0;
+            // 删除第一个、其他情况
+            if(position == 0){
+                head = current.next;
+            } else {
+                // postion 1 
+                while (index++ < position){
+                    previous = current;
+                    current = current.next;
+                }
+                // 把上一项和当前下一项连接
+                previous.next = current.next;
+            }
+            length--;
+            return current.element;
+        } else {
+            return null;
+        }
+    }
+    this.remove = function(element){
+        let index = this.indexOf(element);
+        this.removeAt(index)
+    }
+
+    this.indexOf = function(element){
+        let current = head;
+        index = -1;
+        while(current){
+            index ++;
+            if(current.element == element){
+                return index;
+            }
+            current = current.next
+        }
+        return -1;
+    }
+    this.isEmpty = function(){
+        return length === 0;
+    }
+    this.size = function(){
+        return length;
+    }
+    this.getHead = function(){
+        return head;
+    }
+    this.toString = function(){
+        let current = head,
+        str = '';
+        while(current){
+            str += current.element + (current.next ? ' ':'');
+            current = current.next;
+        }
+        return str;
+    }
+    this.print = function(){
+
+    }
 }
+let list = new LinkedList();
+list.append('v');
+list.append('v');
+list.append('v');
 
-// 插入元素
-Chain.prototype.insertAfter = function (pos, key, value) {
-	var currentObj = this;
-	var addObj = {
-		key  : key,
-		value: value
-	}
-	while (currentObj.key !== pos) {
-		currentObj = currentObj.next;
-	}
-	addObj.next = currentObj.next;
-	currentObj.next = addObj;
-	this.length++;
-	return this;
+list.insert(3,'a');
+
+
+
+console.log(list.toString());
+
+// 双向链表
+function DoublyLinkedList(){
+    let Node = function(element){
+        this.element = element;
+        this.next = null;
+        this.prev = null; //新增
+    }
+    let length = 0;
+    let head = null;
+    let tail = null //新增
+    this.insert = function(position,element){
+        // 检测越界值
+        if (position > -1 && position<=length) {
+            let node = new Node(element),
+                current = head,
+                previous,
+                index = 0;
+                if(position === 0){
+                    // 这儿还需要判断下head是否存在，不存在则设置Node的prev为null
+                    if(!head){
+                        head = node;
+                        tail = node;
+                    } else {
+                        node.next = current;
+                        current.prev = node;
+                        head = node;
+                    }
+                  
+                } else if (position === length){ //如果插入在最后一项则需要处理tail
+                    // while(current){
+                    //     current = current.next;
+                    // }
+                    // current.next = node;
+                    // tail = node.next;
+                    current = tail; // {3} //这儿必然先走position=0的分支，tail不会为null;
+                    current.next = node;
+                    node.prev = current;
+                    tail = node; 
+
+                } else {
+                    while (index++ <position){
+                        previous = current;
+                        current = current.next;
+                    }
+                    node.next = current;
+                    previous.next = node;
+                    current.prev = node;
+                    node.prev = previous;
+                }
+                length++;
+                return true;
+        } else {
+            return false;
+        }
+    }
+    this.removeAt = function(position){
+        if(position > -1 && position < length){
+            let current = head,
+                previous,
+                index = 0;
+            if(position === 0){
+                head = current.next;
+                if(length == 1){
+                    tail = null;
+                } else {
+                    head.prev = null;
+                }
+            } else if (position === length-1) {
+                current = tail;
+                tail = current.prev;
+                tail.next = null;
+            } else {
+                while (index++ < position) {
+                    previous = current;
+                    current = current.next;
+                }
+                previous.next = current.next;
+                current.next.prev = previous;
+            }
+            length--;
+            return current.element
+
+        } else {
+            return null;
+        }
+    }
 }
-
-// 删除元素
-Chain.prototype.delele = function (key) {
-	var last = null;
-	var currentObj = this;
-	while (currentObj.key !== key) {
-		last = currentObj;
-		currentObj = currentObj.next;
-	}
-	last.next = currentObj.next;
-	this.length--;
-	return this;
-}
-
-// 查找元素
-Chain.prototype.find = function (key) {
-	var currentObj = this;
-	while (currentObj.key !== key) {
-		currentObj = currentObj.next;
-	}
-	return currentObj.value;
-}
-
-var chainDemo = new Chain(1,'sss');
-chainDemo.insertAfter(1,2,'ddd')
-chainDemo.insertAfter(1,3,'fff')
-console.log(chainDemo,'demo')
-
-// 循环链表
-function CircularLinkedList(){  
-    var Node = function(element){  
-        this.element = element;  
-        this.next = null;  
-    }  
-  
-    var length = 0,  
-        head   = null;  
-  
-    this.append = function(element){  
-        var node = new Node(element),  
-            current;  
-  
-        if (!head) {  
-            head = node;  
-            node.next = head;  
-        }else{  
-            current = head;  
-  
-            while(current.next !== head){  
-                current = current.next;  
-            }  
-  
-            current.next = node;  
-            node.next = head;  
-        };  
-  
-        length++;  
-        return true;  
-    };  
-  
-    this.insert = function(position, element){  
-        if(position > -1 && position < length){  
-            var node = new Node(element),  
-                index = 0,  
-                current = head,  
-                previous;  
-  
-  
-            if (position === 0) {  
-  
-                node.next = head;  
-                head = node;  
-  
-            }else{  
-  
-                while(index++ < position){  
-                    previous = current;  
-                    current = current.next;  
-                }  
-  
-                previous.next = node;  
-                node.next = current;  
-  
-            };  
-  
-            length++;  
-            return true;  
-        }else{  
-            return false;  
-        }  
-    };  
-  
-    this.removeAt = function(position){  
-        if(position > -1 && position < length){  
-            var current = head,  
-                previous,  
-                index = 0;  
-  
-            if (position === 0) {  
-  
-                head = current.next;  
-  
-            }else{  
-  
-                while (index++ < position){  
-                    previous = current;  
-                    current = current.next;  
-                }  
-  
-                previous.next = current.next;  
-            };  
-  
-            length--;  
-            return current.element;  
-        }else{  
-            return null;  
-        }  
-    };  
-  
-    this.remove = function (element){  
-        var current = head,  
-            previous,  
-            indexCheck = 0;  
-  
-        while(current && indexCheck < length){  
-            if(current.element === element){  
-                if(indexCheck == 0){  
-                    head = current.next;  
-                    length--;  
-                    return true;  
-                }else{  
-                    previous.next = current.next;  
-                    length--;  
-                    return true;  
-                }  
-            }else{  
-                previous = current;  
-                current = current.next;  
-                indexCheck++;  
-            }  
-        }  
-        return false;  
-    };  
-  
-    this.remove = function(){  
-        if(length === 0){  
-            return false;  
-        }  
-  
-        var current = head,  
-            previous,  
-            indexCheck = 0;  
-  
-        if(length === 1){  
-            head = null;  
-            length--;  
-            return current.element;  
-        }  
-  
-        while(indexCheck++ < length){  
-            previous = current;  
-            current = current.next;  
-        }  
-        previous.next = head;  
-        length--;  
-        return current.element;  
-    };  
-  
-    this.indexOf = function(element){  
-        var current = head,  
-            index = 0;  
-  
-        while(current && index < length){  
-            if(current.element === element){  
-                return index;  
-            }else{  
-                index++;  
-                current = current.next;  
-            }  
-        }  
-        return false;  
-    };  
-  
-  
-    this.isEmpty = function(){  
-        return length === 0;  
-    };  
-  
-    this.size = function(){  
-        return length;  
-    };  
-  
-    this.toString = function(){  
-        var current = head,  
-            string = '',  
-            indexCheck = 0;  
-  
-        while(current && indexCheck < length){  
-            string += current.element;  
-            current = current.next;  
-            indexCheck++;  
-        }  
-  
-        return string;  
-    };     
-
-}
+let doublyLinkedList = new DoublyLinkedList();
+// doublyLinkedList.insert(0,'a');
+// doublyLinkedList.insert(0,'b')
+// console.log(doublyLinkedList.insert(0,'c'))
