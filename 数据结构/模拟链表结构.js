@@ -36,6 +36,7 @@ function LinkedList(){
                     head = node;
                 } else {
                     while (index++ <position){
+                        console.log(current,index,'indexxxxxxxxx')
                         previous = current;
                         current = current.next;
                     }
@@ -117,7 +118,7 @@ list.append('v');
 list.append('v');
 list.append('v');
 
-list.insert(3,'a');
+list.insert(1,'a');
 
 
 
@@ -214,3 +215,7 @@ let doublyLinkedList = new DoublyLinkedList();
 // doublyLinkedList.insert(0,'a');
 // doublyLinkedList.insert(0,'b')
 // console.log(doublyLinkedList.insert(0,'c'))
+
+// 循环链表
+// 最后一个元素指向下一个元素的指针不是null,而是head
+// 双向循环链表有指向head元素的tail.next,指向tail的head.prev;
