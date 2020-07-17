@@ -15,21 +15,19 @@
         </style>
     </head>
     <body>
-     <script>
-         /**
-         * Definition for singly-linked list.
-         * function ListNode(val) {
-         *     this.val = val;
-         *     this.next = null;
-         * }
-         */
-
-        /**
-         * @param {ListNode} head
-         * @return {ListNode}
-         */
-        var detectCycle = function(head) {
-        };
-     </script>
+        <input type="file">
+        <script>
+          let input = document.querySelector("input");
+          input.addEventListener("change", () => {
+            for (let file of Array.from(input.files)) {
+                let reader = new FileReader();
+                reader.addEventListener("load", () => {
+                    console.log("File", file.name, "starts with",
+                                reader.result);
+                });
+                reader.readAsText(file);
+            }
+          });
+        </script>
     </body>
 </html>
